@@ -1,5 +1,6 @@
 # Questions
 
-1) Do we get to use sockets?
-2) Sample inputs and outputs??
-3) 
+- Do we get to use sockets?
+- Sample inputs and outputs??
+- Do we implement public-key cryptography for the key generation ourselves or can we use external libraries to implement the same?
+- 
