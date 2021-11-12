@@ -5,7 +5,7 @@ public abstract class Client {
     private int portNumber;
     private String hostName;
 
-    private InetAddress getLocalIP(){
+    private InetAddress getLocalIP() {
         try (Socket socket = new Socket();) {
             socket.connect(new InetSocketAddress("google.com", 80));
             return socket.getLocalAddress();
@@ -15,9 +15,9 @@ public abstract class Client {
         return null;
     }
 
-    public void sendMessage(Packet p, ObjectOutputStream out) {
+    public void sendMessage(Packet packet, ObjectOutputStream out) {
         try {
-            out.writeObject(p);
+            out.writeObject(packet);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -32,7 +32,7 @@ public abstract class Client {
         return null;
     }
 
-    public void communicate(){
+    public void communicate() {
         
     }
 }

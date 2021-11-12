@@ -4,21 +4,27 @@ import java.net.*;
 public class MyServer {
     private int portNumber;
 
-    public void sendMessage(Packet p, ObjectOutputStream out) {
+    public void sendMessage(Packet packet, ObjectOutputStream out) {
         try {
-            out.writeObject(p);
+            out.writeObject(packet);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public Packet receiveMessage(ObjectInputStream in) {
-        try{
+        try {
             return (Packet) in.readObject();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean authenticateIP(Socket clientSocket, ServerSocket serverSocket, 
+                                    Packet packet) {
+        return (serverSocket.getInetAddress() == packet.getDestinationIP() 
+        && clientSocket.getInetAddress() == packet.getSourceIP());
     }
 
     public void communicate() throws IOException, ClassNotFoundException{
@@ -33,8 +39,22 @@ public class MyServer {
             Packet rcvdPacket;
 
             // Initiate conversation with client
-            while ((rcvdPacket = (Packet) in.readObject()) != null){
-                
+            while ((rcvdPacket = (Packet) in.readObject()) != null) {
+                if(authenticateIP(clientSocket, serverSocket, rcvdPacket)) {
+                    // decide action based on message from client
+                    Packet sendPacket = null;
+                    switch(rcvdPacket.getMessage()) {
+                        case "PING":
+                            sendPacket = new RequestPacket(
+                                rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), "AUTH");
+                        case "YES":
+                            sendPacket = new ResponsePacket(
+                                rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), "DONE");
+                    }
+                    if (sendPacket != null) {
+                        out.writeObject(sendPacket);
+                    }
+                }
             }
 
         } catch (IOException e) {
