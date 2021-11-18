@@ -32,7 +32,39 @@ public abstract class Client {
         return null;
     }
 
-    public void communicate() {
-        
-    }
-}
+    public void communicate() throws IOException {
+        try(
+            Socket clientSocket = new Socket(hostName, portNumber);
+            ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
+            ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
+
+        ){
+            System.out.println("Client communicating through port:"+portNumber);
+            Packet sendPacket; 
+            Packet rcvdPacket;
+            while ((rcvdPacket = (Packet) in.readObject()) != null) {
+                if(authenticateIP(clientSocket, serverSocket, rcvdPacket)) {
+                    // decide action based on message from client
+                    Packet sendPacket = null;
+                    switch(rcvdPacket.getMessage()) {
+                        case "PING":
+                            sendPacket = new RequestPacket(
+                                rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), "AUTH");
+                        case "YES":
+                            sendPacket = new ResponsePacket(
+                                rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), "DONE");
+                    }
+                    if (sendPacket != null) {
+                        out.writeObject(sendPacket);
+                    }
+                }
+            }
+
+        } catch (IOException e) {
+            System.out.println("Exception caught when trying to listen on port "
+                + portNumber + " or listening for a connection");
+            System.out.println(e.getMessage());
+        }
+
+    }      
+ }
