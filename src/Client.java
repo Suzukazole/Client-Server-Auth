@@ -2,10 +2,17 @@ import java.io.*;
 import java.net.*;
 
 public abstract class Client {
-    private int portNumber;
-    private String hostName;
+    protected int portNumber;
+    protected String hostName;
 
-    private InetAddress getLocalIP() {
+    public Client(int portNumber, String hostName) {
+        this.portNumber = portNumber;
+        this.hostName = hostName;
+    }
+
+    public abstract void authenticate() throws UnknownHostException, IOException, ClassNotFoundException;
+
+    protected InetAddress getLocalIP() {
         try (Socket socket = new Socket();) {
             socket.connect(new InetSocketAddress("google.com", 80));
             return socket.getLocalAddress();
@@ -32,36 +39,20 @@ public abstract class Client {
         return null;
     }
 
-    public void communicate() throws IOException {
-        try(
-            Socket clientSocket = new Socket(hostName, portNumber);
-            ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
-            ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
+    // public void communicate() throws IOException, ClassNotFoundException {
+    //     try(
+    //         Socket clientSocket = new Socket(hostName, portNumber);
+    //         ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
+    //         ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
+    //     ){
+    //         System.out.println("Client communicating through port:" + portNumber);
+    //         Packet rcvdPacket, sendPacket = null;
 
-        ){
-            System.out.println("Client communicating through port:"+portNumber);
-            Packet sendPacket = null; 
-            Packet rcvdPacket = null;
-            while ((rcvdPacket = (Packet) in.readObject()) != null) {
-                    // decide action based on message from client
-                    switch(rcvdPacket.getMessage()) {
-                        case "PING":
-                            sendPacket = new RequestPacket(
-                                rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), "AUTH");
-                        case "YES":
-                            sendPacket = new ResponsePacket(
-                                rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), "DONE");
-                    }
-                    if (sendPacket != null) {
-                        out.writeObject(sendPacket);
-                    }
-            }
+    //     } catch (IOException e) {
+    //         System.out.println("Exception caught when trying to listen on port "
+    //             + portNumber + " or listening for a connection");
+    //         System.out.println(e.getMessage());
+    //     }
 
-        } catch (IOException e) {
-            System.out.println("Exception caught when trying to listen on port "
-                + portNumber + " or listening for a connection");
-            System.out.println(e.getMessage());
-        }
-
-    }      
+    // }      
  }

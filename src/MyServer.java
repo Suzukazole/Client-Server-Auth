@@ -4,6 +4,10 @@ import java.net.*;
 public class MyServer {
     private int portNumber;
 
+    public MyServer(int portNumber) {
+        this.portNumber = portNumber;
+    }
+
     public void sendMessage(Packet packet, ObjectOutputStream out) {
         try {
             out.writeObject(packet);
@@ -27,7 +31,12 @@ public class MyServer {
         && clientSocket.getInetAddress() == packet.getSourceIP());
     }
 
-    public void communicate() throws IOException, ClassNotFoundException{
+    public void authenticate() throws IOException, ClassNotFoundException{
+    }  
+
+    public static void main(String[] args) throws ClassNotFoundException, IOException {
+        int portNumber = 8080;
+        MyServer server = new MyServer(portNumber);
         try (
         ServerSocket serverSocket = new ServerSocket(portNumber);
         Socket clientSocket = serverSocket.accept();
@@ -40,7 +49,7 @@ public class MyServer {
 
             // Initiate conversation with client
             while ((rcvdPacket = (Packet) in.readObject()) != null) {
-                if(authenticateIP(clientSocket, serverSocket, rcvdPacket)) {
+                if(server.authenticateIP(clientSocket, serverSocket, rcvdPacket)) {
                     // decide action based on message from client
                     Packet sendPacket = null;
                     switch(rcvdPacket.getMessage()) {
@@ -56,11 +65,13 @@ public class MyServer {
                     }
                 }
             }
-
         } catch (IOException e) {
             System.out.println("Exception caught when trying to listen on port "
                 + portNumber + " or listening for a connection");
             System.out.println(e.getMessage());
         }
+        MyClient client = new MyClient(8080, "localhost");
+        client.authenticate();
+
     }
 }
