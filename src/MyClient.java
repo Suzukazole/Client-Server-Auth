@@ -56,7 +56,7 @@ public class MyClient extends Client{
     }
 
     public static void main(String[] args) throws UnknownHostException, IOException, ClassNotFoundException {
-        MyClient client = new MyClient(8080, "localhost");
+        MyClient client = new MyClient(8080, "172.17.74.82");
         client.authenticate();
     }
 
