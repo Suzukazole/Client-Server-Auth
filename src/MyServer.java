@@ -4,6 +4,10 @@ import java.net.*;
 public class MyServer {
     private int portNumber;
 
+    public MyServer(int portNumber) {
+        this.portNumber = portNumber;
+    }
+
     public void sendMessage(Packet packet, ObjectOutputStream out) {
         try {
             out.writeObject(packet);
@@ -27,23 +31,26 @@ public class MyServer {
         && clientSocket.getInetAddress() == packet.getSourceIP());
     }
 
-    public void communicate() throws IOException, ClassNotFoundException{
+    public void authenticate() throws IOException, ClassNotFoundException{
+        System.out.println("Server listening for client connections on port " + portNumber);
         try (
         ServerSocket serverSocket = new ServerSocket(portNumber);
         Socket clientSocket = serverSocket.accept();
         ObjectOutputStream out =
             new ObjectOutputStream(clientSocket.getOutputStream());
         ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
-        ) {
-            System.out.println("Server listening for client connections on port " + portNumber);
+        PrintWriter outWriter = new PrintWriter(clientSocket.getOutputStream(), true);
+        ) { 
+            System.out.println("Client connected from " + clientSocket.getInetAddress().getHostAddress());
             Packet rcvdPacket;
 
             // Initiate conversation with client
             while ((rcvdPacket = (Packet) in.readObject()) != null) {
-                if(authenticateIP(clientSocket, serverSocket, rcvdPacket)) {
                     // decide action based on message from client
                     Packet sendPacket = null;
-                    switch(rcvdPacket.getMessage()) {
+                    String message = rcvdPacket.getMessage();
+                    System.out.println("Message received from client: " + message);
+                    switch(message) {
                         case "PING":
                             sendPacket = new RequestPacket(
                                 rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), "AUTH");
@@ -52,15 +59,19 @@ public class MyServer {
                                 rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), "DONE");
                     }
                     if (sendPacket != null) {
+                        System.out.println("Sending message to client: " + sendPacket.getMessage());
                         out.writeObject(sendPacket);
                     }
                 }
-            }
-
-        } catch (IOException e) {
+            } catch (IOException e) {
             System.out.println("Exception caught when trying to listen on port "
                 + portNumber + " or listening for a connection");
             System.out.println(e.getMessage());
         }
+    }  
+
+    public static void main(String[] args) throws ClassNotFoundException, IOException {
+        MyServer server = new MyServer(8080);
+        server.authenticate();
     }
 }
