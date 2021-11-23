@@ -40,12 +40,10 @@ public abstract class Client {
 
         ){
             System.out.println("Client communicating through port:"+portNumber);
-            Packet sendPacket; 
-            Packet rcvdPacket;
+            Packet sendPacket = null; 
+            Packet rcvdPacket = null;
             while ((rcvdPacket = (Packet) in.readObject()) != null) {
-                if(authenticateIP(clientSocket, serverSocket, rcvdPacket)) {
                     // decide action based on message from client
-                    Packet sendPacket = null;
                     switch(rcvdPacket.getMessage()) {
                         case "PING":
                             sendPacket = new RequestPacket(
@@ -57,7 +55,6 @@ public abstract class Client {
                     if (sendPacket != null) {
                         out.writeObject(sendPacket);
                     }
-                }
             }
 
         } catch (IOException e) {
