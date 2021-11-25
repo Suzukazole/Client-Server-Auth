@@ -41,6 +41,10 @@ public class EvilClient extends Client {
                     sendPacket = new RequestPacket(rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), "NO");
                     System.out.println("Sending message to server: " + sendPacket.getMessage());
                 }
+                if (message.equals("FAIL")){
+                    JOptionPane.showMessageDialog(null, "Authentication failed. Please try again.");
+                    System.exit(0);
+                }
                 if (message.equals("DONE")) {
                     JOptionPane.showMessageDialog(null, "Client authenticated");
                     System.out.println();

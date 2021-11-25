@@ -62,6 +62,8 @@ public class MyServerThread extends Thread {
                     sendPacket = new ResponsePacket(rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), "DONE");
                     break;
                 case "NO":
+                    sendPacket = new ResponsePacket(rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), "FAIL");
+                    sendMessage(sendPacket, out);
                     JOptionPane.showMessageDialog(null, "Client not authenticated. Closing connection...");
                     // close connection
                     socket.close();
@@ -82,7 +84,10 @@ public class MyServerThread extends Thread {
                 }
             }
             socket.close();
-        } catch (SocketTimeoutException e) {
+        } catch (SocketException e){
+            JOptionPane.showMessageDialog(null, "Client disconnected.");
+        }
+        catch (SocketTimeoutException e) {
             JOptionPane.showMessageDialog(null, 
                     "Connection timed out because the client did not communicate any data. Please try connecting again.");
         } catch (EOFException e) {
