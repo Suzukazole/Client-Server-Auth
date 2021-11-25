@@ -3,12 +3,12 @@ import java.net.*;
 import java.util.*;
 import javax.swing.*;
 
-public class Server {
+public class MyServer {
     private int portNumber; // port number to connect to
     private ArrayList<ServerThread> clients; // list of clients connected to the server
 
     // constructor
-    public Server(int portNumber) {
+    public MyServer(int portNumber) {
         this.portNumber = portNumber;
         this.clients = new ArrayList<ServerThread>();
     }
@@ -57,6 +57,6 @@ public class Server {
                 JOptionPane.showMessageDialog(null, "Please enter a valid port number.");
             }
         }
-        new Server(portNumber).start();
+        new MyServer(portNumber).start();
     }
 }
