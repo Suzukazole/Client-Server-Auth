@@ -30,9 +30,11 @@ public class Server {
                     for (ServerThread c : clients) {
                         c.join();
                     }
+                    System.out.println("Server listening for client connections on port " + portNumber);
                     JOptionPane.showMessageDialog(null, "Server listening for client connections on port " + portNumber);
                 }
             } catch (EOFException e) {
+                System.out.println("Client disconnected.");
                 JOptionPane.showMessageDialog(null, "Client disconnected.");
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Exception caught when trying to listen on port " + portNumber
