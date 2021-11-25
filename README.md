@@ -27,3 +27,24 @@ If the server is running locally, i.e on the same machine as the client simply t
 - After that, enter the port number of the server. This must be the same number
 entered while initialising the server-side (8080, in this example).
 - This will initiate the authentication process.
+
+### Communication loop usage for Server and Client
+-  Once the Authentication has been set up in the backend, messages can be sent to and
+from the client and the server.
+-  To initiate the communication loop, send a message to the Server from the client,
+through the interface. Input 1 to begin the process.
+-  Once a message has been sent, the server will receive the message through a packet
+and it will be displayed on the server interface. At this point, the server can choose to
+respond to the client with another message. This can be done directly through the server
+interface.
+-  The client can choose to continue in this loop or can close the connection by entering
+any other number to close the connection to the Server. The client will close the
+connection to the server if the delay period is exceeded. It is currently set to 30s.
+-  When the server is done listening for connections kill the server process directly to exit the application.
+
+
+### Setting up Multiple Clients
+Since the server is a multithreaded application it can support multiple client connections at the
+same time. Setting up multiple clients is no different. Just run the Client application on different
+IP addresses and connect to the correct server address and port. The authentication and
+communication loop happen in the same way.
