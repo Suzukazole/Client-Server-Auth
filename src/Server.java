@@ -9,13 +9,13 @@ public class Server {
         this.portNumber = portNumber;
     }
 
-    public void start() throws IOException, ClassNotFoundException {
+    public void start(Scanner scanner) throws IOException, ClassNotFoundException {
         boolean listening = true;
         while (listening) {
             System.out.println("Server listening for client connections on port " + portNumber);
             try (ServerSocket serverSocket = new ServerSocket(portNumber);) {
                 while (true) {
-                    new ServerThread(serverSocket.accept()).start();
+                    new ServerThread(serverSocket.accept(), scanner).start();
                 }
             } catch (EOFException e) {
                 System.out.println("Client disconnected.");
@@ -33,7 +33,8 @@ public class Server {
         System.out.println("Enter the port number on which the server should listen for connections:");
         Scanner scanner = new Scanner(System.in);
         int portNumber = scanner.nextInt();
-        new Server(portNumber).start();
+        scanner.nextLine();
+        new Server(portNumber).start(scanner);
         scanner.close();
     }
 }

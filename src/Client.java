@@ -6,10 +6,12 @@ public class Client {
 
     protected int portNumber;
     protected String hostName;
+    private Scanner scanner;
 
-    public Client(int portNumber, String hostName) {
+    public Client(int portNumber, String hostName, Scanner scanner) {
         this.portNumber = portNumber;
         this.hostName = hostName;
+        this.scanner = scanner;
     }
 
     protected InetAddress getLocalIP() {
@@ -42,8 +44,7 @@ public class Client {
     public void communicate() throws UnknownHostException, IOException, ClassNotFoundException {
         try (Socket clientSocket = new Socket(hostName, portNumber);
                 ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
-                ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
-                Scanner sc = new Scanner(System.in);) {
+                ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());) {
 
             // If no data is transferred, close the client socket after 30 seconds
             clientSocket.setSoTimeout(30 * 1000);
@@ -89,17 +90,17 @@ public class Client {
                 int choice = -1;
                 while (!flag) {
                     try {
-                        choice = sc.nextInt();
-                        sc.nextLine();
+                        choice = scanner.nextInt();
+                        scanner.nextLine();
                         flag = true;
                     } catch (InputMismatchException e) {
                         System.out.println("Please enter a valid choice: ");
-                        sc.nextLine();
+                        scanner.nextLine();
                     }
                 }
                 if (choice == 1) {
                     System.out.println("Enter the message you wish to send to the server: ");
-                    String message = sc.nextLine();
+                    String message = scanner.nextLine();
                     sendPacket = new RequestPacket(getLocalIP(), InetAddress.getLocalHost(), message);
                     System.out.println("Sending message to server: " + sendPacket.getMessage());
                     sendMessage(sendPacket, out);
@@ -129,7 +130,7 @@ public class Client {
         String hostName = sc.nextLine();
         System.out.println("Enter the port number on which the server is listening for connections: ");
         int portNumber = sc.nextInt();
-        Client client = new Client(portNumber, hostName);
+        Client client = new Client(portNumber, hostName, sc);
         client.communicate();
         sc.close();
     }

@@ -1,14 +1,16 @@
 import java.io.*;
 import java.net.*;
-import java.util.Scanner;
+import java.util.*;
 
 public class ServerThread extends Thread {
 
     private Socket socket = null;
+    private Scanner scanner;
 
-    public ServerThread(Socket socket) {
+    public ServerThread(Socket socket, Scanner scanner) {
         super("ServerThread");
         this.socket = socket;
+        this.scanner = scanner;
         try{
             // close the socket after 60 seconds of inactivity
             socket.setSoTimeout(60 * 1000);
@@ -27,8 +29,7 @@ public class ServerThread extends Thread {
 
     public void run() {
         try (ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-                Scanner sc = new Scanner(System.in);) {
+                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());) {
             String clientIP = socket.getInetAddress().getHostAddress();
             System.out.println("Client connected from " + clientIP);
             Packet rcvdPacket;
@@ -53,7 +54,7 @@ public class ServerThread extends Thread {
                     break;
                 default:
                     System.out.println("Enter response: ");
-                    String response = sc.nextLine();
+                    String response = scanner.nextLine();
                     sendPacket = new ResponsePacket(rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), response);
                     break;
                 }
