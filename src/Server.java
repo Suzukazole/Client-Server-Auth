@@ -20,6 +20,7 @@ public class Server {
             } catch (EOFException e) {
                 System.out.println("Client disconnected.");
                 System.out.println();
+                continue;
             } catch (IOException e) {
                 System.out.println("Exception caught when trying to listen on port " + portNumber
                         + " or listening for a connection");

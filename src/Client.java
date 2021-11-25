@@ -45,8 +45,8 @@ public class Client {
                 ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
                 Scanner sc = new Scanner(System.in);) {
 
-            // If no data is transferred, close the client socket after 10 seconds
-            clientSocket.setSoTimeout(10 * 1000);
+            // If no data is transferred, close the client socket after 30 seconds
+            clientSocket.setSoTimeout(30 * 1000);
 
             /* authentication */
             System.out.println("Client communicating through port:" + portNumber);
@@ -112,12 +112,14 @@ public class Client {
 
             }
             System.out.println();
-        } catch (SocketTimeoutException e) {
-            System.out.println("Client timed out. Closing communications with server...");
+        } catch (UnknownHostException e) {
+            System.out.println("Unknown host: " + hostName);
         } catch (IOException e) {
             System.out.println(
                     "Exception caught when trying to listen on port " + portNumber + " or listening for a connection");
             System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Client timed out. Closing communications with server...");
         }
     }
 

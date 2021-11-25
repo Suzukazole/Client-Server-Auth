@@ -10,7 +10,8 @@ public class ServerThread extends Thread {
         super("ServerThread");
         this.socket = socket;
         try{
-            socket.setSoTimeout(10 * 1000);
+            // close the socket after 60 seconds of inactivity
+            socket.setSoTimeout(60 * 1000);
         } catch (SocketException e) {
             System.out.println("Connection failed due to a corrupted socket. Please try again.");
         }
@@ -44,6 +45,11 @@ public class ServerThread extends Thread {
                     break;
                 case "YES":
                     sendPacket = new ResponsePacket(rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), "DONE");
+                    break;
+                case "NO":
+                    System.out.println("Client not authenticated. Closing connection...");
+                    // close connection
+                    socket.close();
                     break;
                 default:
                     System.out.println("Enter response: ");
