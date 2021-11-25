@@ -1,17 +1,15 @@
 import java.io.*;
 import java.net.*;
-import java.util.*;
+import javax.swing.*;
 
 public class ServerThread extends Thread {
 
     private Socket socket = null; // socket to connect to
-    private Scanner scanner; // scanner to read user input
 
     // constructor
-    public ServerThread(Socket socket, Scanner scanner) {
+    public ServerThread(Socket socket) {
         super("ServerThread");
         this.socket = socket;
-        this.scanner = scanner;
         try {
             // close the socket after 60 seconds of inactivity
             socket.setSoTimeout(60 * 1000);
@@ -41,6 +39,7 @@ public class ServerThread extends Thread {
                 ObjectInputStream in = new ObjectInputStream(socket.getInputStream());) {
             // get client's IP address
             String clientIP = socket.getInetAddress().getHostAddress();
+            JOptionPane.showMessageDialog(null, "Client connected from " + clientIP);
             System.out.println("Client connected from " + clientIP);
             Packet rcvdPacket;
 
@@ -49,7 +48,11 @@ public class ServerThread extends Thread {
                 // decide action based on message from client
                 Packet sendPacket = null;
                 String message = rcvdPacket.getMessage();
-                System.out.println("Message received from client " + clientIP + ": " + message);
+                if (!(message.equals("PING") || message.equals("YES") || message.equals("NO"))){
+                    JOptionPane.showMessageDialog(null, "Message received from client " + clientIP + ": " + message);
+                } else{
+                    System.out.println("Message received from client " + clientIP + ": " + message);
+                }
                 switch (message) {
                 // authenticate client
                 case "PING":
@@ -59,35 +62,35 @@ public class ServerThread extends Thread {
                     sendPacket = new ResponsePacket(rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), "DONE");
                     break;
                 case "NO":
-                    System.out.println("Client not authenticated. Closing connection...");
+                    JOptionPane.showMessageDialog(null, "Client not authenticated. Closing connection...");
                     // close connection
                     socket.close();
                     break;
                 // messaging after client has been authenticated
                 default:
-                    System.out.println("Enter response: ");
-                    String response = scanner.nextLine();
+                    String response = JOptionPane.showInputDialog("Enter response: ");
                     sendPacket = new ResponsePacket(rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), response);
                     break;
                 }
                 // send message to client
-                if (sendPacket != null) {
+                if (sendPacket != null && !(message.equals("PING") || message.equals("YES") || message.equals("NO"))) {
+                    JOptionPane.showMessageDialog(null, "Sending message to client " + clientIP + " :" + sendPacket.getMessage());
+                    sendMessage(sendPacket, out);
+                } else{
                     System.out.println("Sending message to client: " + sendPacket.getMessage());
                     sendMessage(sendPacket, out);
                 }
             }
             socket.close();
         } catch (SocketTimeoutException e) {
-            System.out.println(
+            JOptionPane.showMessageDialog(null, 
                     "Connection timed out because the client did not communicate any data. Please try connecting again.");
-            System.out.println();
         } catch (EOFException e) {
-            System.out.println("Client disconnected.");
-            System.out.println();
+            JOptionPane.showMessageDialog(null, "Client disconnected.");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            System.out.println("The data is corrupted. Please try connecting again.");
+            JOptionPane.showMessageDialog(null, "The data is corrupted. Please try connecting again.");
         }
     }
 

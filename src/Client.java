@@ -1,17 +1,15 @@
 import java.net.*;
-import java.util.*;
 import java.io.*;
+import javax.swing.*;
 
 public class Client {
 
     protected int portNumber; // port number to connect to
     protected String hostName; // host name to connect to
-    private Scanner scanner; // scanner to read user input
 
-    public Client(int portNumber, String hostName, Scanner scanner) {
+    public Client(int portNumber, String hostName) {
         this.portNumber = portNumber;
         this.hostName = hostName;
-        this.scanner = scanner;
     }
 
     // get the IP address of the client
@@ -54,7 +52,7 @@ public class Client {
             clientSocket.setSoTimeout(30 * 1000);
 
             // authenticate with the server
-            System.out.println("Client communicating through port:" + portNumber);
+            JOptionPane.showMessageDialog(null, "Client communicating through port:" + portNumber);
             Packet rcvdPacket = new ResponsePacket(null, null, "");
             Packet sendPacket = null;
 
@@ -77,7 +75,7 @@ public class Client {
                     System.out.println("Sending message to server: " + sendPacket.getMessage());
                 }
                 if (message.equals("DONE")) {
-                    System.out.println("Client authenticated");
+                    JOptionPane.showMessageDialog(null, "Client authenticated");
                     System.out.println();
                     break;
                 }
@@ -89,56 +87,55 @@ public class Client {
             boolean comms = true; // flag to indicate if client is still communicating with server
             while (comms) {
                 // check if user still wants to communicate with server
-                System.out.println(
-                        "Would you like to continue communicating with the server? If yes, please type 1. If no, enter any number to exit.");
-                boolean flag = false;
                 int choice = -1;
+                boolean flag = false;
                 while (!flag) {
                     try {
-                        choice = scanner.nextInt();
-                        scanner.nextLine();
+                        choice = Integer.parseInt(JOptionPane.showInputDialog(null, 
+                        "Would you like to continue communicating with the server? If yes, please type 1. If no, enter any number to exit."));
                         flag = true;
-                    } catch (InputMismatchException e) {
-                        System.out.println("Please enter a valid choice: ");
-                        scanner.nextLine();
+                    } catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(null, "Please enter a valid number.");
                     }
                 }
                 if (choice == 1) {
                     // send message to server
-                    System.out.println("Enter the message you wish to send to the server: ");
-                    String message = scanner.nextLine();
+                    String message = JOptionPane.showInputDialog("Enter the message you wish to send to the server: "); 
                     sendPacket = new RequestPacket(getLocalIP(), InetAddress.getLocalHost(), message);
-                    System.out.println("Sending message to server: " + sendPacket.getMessage());
+                    JOptionPane.showMessageDialog(null, "Sending message to server: " + sendPacket.getMessage());
                     sendMessage(sendPacket, out);
                     rcvdPacket = receiveMessage(in);
-                    System.out.println("Message received from server: " + rcvdPacket.getMessage());
+                    JOptionPane.showMessageDialog(null, "Message received from server: " + rcvdPacket.getMessage());
                 } else {
-                    System.out.println("Closing communications with server...");
+                    JOptionPane.showMessageDialog(null, "Closing communications with server...");
                     comms = false;
                 }
-
             }
-            System.out.println();
         } catch (UnknownHostException e) {
-            System.out.println("Unknown host: " + hostName);
+            JOptionPane.showMessageDialog(null, "Unknown host: " + hostName);
         } catch (IOException e) {
-            System.out.println(
+            JOptionPane.showMessageDialog(null, 
                     "Exception caught when trying to listen on port " + portNumber + " or listening for a connection");
             System.out.println(e.getMessage());
         } catch (Exception e) {
-            System.out.println("Client timed out. Closing communications with server...");
+            JOptionPane.showMessageDialog(null, "Client timed out. Closing communications with server...");
         }
     }
 
     public static void main(String[] args) throws UnknownHostException, IOException, ClassNotFoundException {
-        Scanner sc = new Scanner(System.in);
-        System.out.println(
-                "Enter the IP address of the machine on which the server is running. If the server is running on the same machine, then type in 'localhost'.");
-        String hostName = sc.nextLine();
-        System.out.println("Enter the port number on which the server is listening for connections: ");
-        int portNumber = sc.nextInt();
-        Client client = new Client(portNumber, hostName, sc);
+        String hostName = JOptionPane.showInputDialog("Enter the IP address of the machine on which the server is running. If the server is running on the same machine, then type in 'localhost'.");
+        boolean flag = false;
+        int portNumber = 8080;
+        while (!flag) {
+            try{
+                portNumber = Integer.parseInt(JOptionPane.showInputDialog("Enter the port number on which the server is listening for connections: "));
+                flag = true;
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Please enter a valid port number.");
+            }
+        }
+       
+        Client client = new Client(portNumber, hostName);
         client.communicate();
-        sc.close();
     }
 }
