@@ -76,7 +76,7 @@ public class EvilClient extends Client {
             }
         }
 
-        MyClient client = new MyClient(portNumber, hostName);
+        EvilClient client = new EvilClient(portNumber, hostName);
         client.communicate();
     }
 }
