@@ -1,6 +1,11 @@
+package Client;
 import java.net.*;
 import java.io.*;
 import javax.swing.*;
+
+import Packet.Packet;
+import Packet.RequestPacket;
+import Packet.ResponsePacket;
 
 public class EvilClient extends Client {
 

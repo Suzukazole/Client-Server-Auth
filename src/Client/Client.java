@@ -1,5 +1,8 @@
+package Client;
 import java.io.*;
 import java.net.*;
+
+import Packet.Packet;
 
 public abstract class Client {
 

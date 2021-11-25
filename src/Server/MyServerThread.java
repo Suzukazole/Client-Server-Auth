@@ -1,6 +1,11 @@
+package Server;
 import java.io.*;
 import java.net.*;
 import javax.swing.*;
+
+import Packet.Packet;
+import Packet.RequestPacket;
+import Packet.ResponsePacket;
 
 public class MyServerThread extends Thread {
 
