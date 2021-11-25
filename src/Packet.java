@@ -2,25 +2,27 @@ import java.io.*;
 import java.net.*;
 
 public abstract class Packet implements Serializable {
-    private InetAddress sourceIP;
-    private InetAddress destinationIP;
-    private String message;
+    private InetAddress sourceIP; // IP address of the source
+    private InetAddress destinationIP; // IP address of the destination
+    private String message; // message to be sent
 
-    Packet(InetAddress sourceIP, InetAddress destinationIP, String message){
+    // constructor
+    Packet(InetAddress sourceIP, InetAddress destinationIP, String message) {
         this.sourceIP = sourceIP;
         this.destinationIP = destinationIP;
         this.message = message;
     }
 
-    public InetAddress getSourceIP(){
+    // getters
+    public InetAddress getSourceIP() {
         return this.sourceIP;
     }
 
-    public InetAddress getDestinationIP(){
+    public InetAddress getDestinationIP() {
         return this.destinationIP;
     }
 
-    public String getMessage(){
+    public String getMessage() {
         return this.message;
     }
 }

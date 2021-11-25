@@ -4,14 +4,15 @@ import java.util.*;
 
 public class ServerThread extends Thread {
 
-    private Socket socket = null;
-    private Scanner scanner;
+    private Socket socket = null; // socket to connect to
+    private Scanner scanner; // scanner to read user input
 
+    // constructor
     public ServerThread(Socket socket, Scanner scanner) {
         super("ServerThread");
         this.socket = socket;
         this.scanner = scanner;
-        try{
+        try {
             // close the socket after 60 seconds of inactivity
             socket.setSoTimeout(60 * 1000);
         } catch (SocketException e) {
@@ -19,17 +20,26 @@ public class ServerThread extends Thread {
         }
     }
 
+    // getters
+    public Socket getSocket() {
+        return socket;
+    }
+
+    // send message to the client
     public void sendMessage(Packet packet, ObjectOutputStream out) throws IOException {
         out.writeObject(packet);
     }
 
+    // receive message from the client
     public Packet receiveMessage(ObjectInputStream in) throws IOException, ClassNotFoundException {
         return (Packet) in.readObject();
     }
 
+    // run method
     public void run() {
         try (ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                 ObjectInputStream in = new ObjectInputStream(socket.getInputStream());) {
+            // get client's IP address
             String clientIP = socket.getInetAddress().getHostAddress();
             System.out.println("Client connected from " + clientIP);
             Packet rcvdPacket;
@@ -41,6 +51,7 @@ public class ServerThread extends Thread {
                 String message = rcvdPacket.getMessage();
                 System.out.println("Message received from client " + clientIP + ": " + message);
                 switch (message) {
+                // authenticate client
                 case "PING":
                     sendPacket = new RequestPacket(rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), "AUTH");
                     break;
@@ -52,23 +63,25 @@ public class ServerThread extends Thread {
                     // close connection
                     socket.close();
                     break;
+                // messaging after client has been authenticated
                 default:
                     System.out.println("Enter response: ");
                     String response = scanner.nextLine();
                     sendPacket = new ResponsePacket(rcvdPacket.getDestinationIP(), rcvdPacket.getSourceIP(), response);
                     break;
                 }
+                // send message to client
                 if (sendPacket != null) {
                     System.out.println("Sending message to client: " + sendPacket.getMessage());
                     sendMessage(sendPacket, out);
                 }
             }
             socket.close();
-        } 
-        catch (SocketTimeoutException e) {
-            System.out.println("Connection timed out because the client did not communicate any data. Please try again.");
-        }
-        catch (EOFException e) {
+        } catch (SocketTimeoutException e) {
+            System.out.println(
+                    "Connection timed out because the client did not communicate any data. Please try connecting again.");
+            System.out.println();
+        } catch (EOFException e) {
             System.out.println("Client disconnected.");
             System.out.println();
         } catch (IOException e) {
