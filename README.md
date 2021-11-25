@@ -45,6 +45,6 @@ connection to the server if the delay period is exceeded. It is currently set to
 
 ### Setting up Multiple Clients
 Since the server is a multithreaded application it can support multiple client connections at the
-same time. Setting up multiple clients is no different. Just run the Client application on different
+same time. Setting up multiple clients is no different, just run the Client application on different
 IP addresses and connect to the correct server address and port. The authentication and
 communication loop happen in the same way.
