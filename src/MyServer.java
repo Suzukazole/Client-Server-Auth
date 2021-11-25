@@ -5,12 +5,12 @@ import javax.swing.*;
 
 public class MyServer {
     private int portNumber; // port number to connect to
-    private ArrayList<ServerThread> clients; // list of clients connected to the server
+    private ArrayList<MyServerThread> clients; // list of clients connected to the server
 
     // constructor
     public MyServer(int portNumber) {
         this.portNumber = portNumber;
-        this.clients = new ArrayList<ServerThread>();
+        this.clients = new ArrayList<MyServerThread>();
     }
 
     // start the server
@@ -21,13 +21,13 @@ public class MyServer {
             JOptionPane.showMessageDialog(null, "Server listening for client connections on port " + portNumber);
             try (ServerSocket serverSocket = new ServerSocket(portNumber);) {
                 while (true) {
-                    ServerThread client = new ServerThread(serverSocket.accept());
+                    MyServerThread client = new MyServerThread(serverSocket.accept());
                     client.start(); // start the thread
                     clients.add(client); // add the client to the list of clients
                     // remove closed clients from the list of clients
                     clients.removeIf(c -> !c.isAlive());
                     // wait for all clients to disconnect
-                    for (ServerThread c : clients) {
+                    for (MyServerThread c : clients) {
                         c.join();
                     }
                     System.out.println("Server listening for client connections on port " + portNumber);

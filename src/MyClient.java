@@ -50,7 +50,7 @@ public class MyClient extends Client {
                     sendMessage(sendPacket, out);
                 }
             }
-            /* communication with server */
+            // communication with server
             boolean comms = true; // flag to indicate if client is still communicating with server
             while (comms) {
                 // check if user still wants to communicate with server

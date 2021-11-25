@@ -2,12 +2,12 @@ import java.io.*;
 import java.net.*;
 import javax.swing.*;
 
-public class ServerThread extends Thread {
+public class MyServerThread extends Thread {
 
     private Socket socket = null; // socket to connect to
 
     // constructor
-    public ServerThread(Socket socket) {
+    public MyServerThread(Socket socket) {
         super("ServerThread");
         this.socket = socket;
         try {
