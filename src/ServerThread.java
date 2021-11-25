@@ -39,6 +39,7 @@ public class ServerThread extends Thread {
                 ObjectInputStream in = new ObjectInputStream(socket.getInputStream());) {
             // get client's IP address
             String clientIP = socket.getInetAddress().getHostAddress();
+            JOptionPane.showMessageDialog(null, "Client connected from " + clientIP);
             System.out.println("Client connected from " + clientIP);
             Packet rcvdPacket;
 
@@ -84,10 +85,8 @@ public class ServerThread extends Thread {
         } catch (SocketTimeoutException e) {
             JOptionPane.showMessageDialog(null, 
                     "Connection timed out because the client did not communicate any data. Please try connecting again.");
-            System.out.println();
         } catch (EOFException e) {
             JOptionPane.showMessageDialog(null, "Client disconnected.");
-            System.out.println();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {

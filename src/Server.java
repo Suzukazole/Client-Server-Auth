@@ -18,6 +18,7 @@ public class Server {
         boolean listening = true;
         while (listening) {
             System.out.println("Server listening for client connections on port " + portNumber);
+            JOptionPane.showMessageDialog(null, "Server listening for client connections on port " + portNumber);
             try (ServerSocket serverSocket = new ServerSocket(portNumber);) {
                 while (true) {
                     ServerThread client = new ServerThread(serverSocket.accept());
@@ -29,19 +30,16 @@ public class Server {
                     for (ServerThread c : clients) {
                         c.join();
                     }
-                    System.out.println("Server listening for client connections on port " + portNumber);
+                    JOptionPane.showMessageDialog(null, "Server listening for client connections on port " + portNumber);
                 }
             } catch (EOFException e) {
-                System.out.println("Client disconnected.");
-                System.out.println();
-                continue;
+                JOptionPane.showMessageDialog(null, "Client disconnected.");
             } catch (IOException e) {
-                System.out.println("Exception caught when trying to listen on port " + portNumber
+                JOptionPane.showMessageDialog(null, "Exception caught when trying to listen on port " + portNumber
                         + " or listening for a connection");
                 System.out.println(e.getMessage());
             } catch (InterruptedException e) {
-                System.out.println("Server interrupted unexpectedly. Please try again later.");
-                System.out.println();
+                JOptionPane.showMessageDialog(null, "Server interrupted unexpectedly. Please try again later.");
             }
         }
     }
